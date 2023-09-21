@@ -10,6 +10,8 @@ albedo_color = Color(0.8, 0.247059, 0, 1)
 size = Vector3(0.1, 1.2, 0.1)
 
 [node name="Matchstick" type="RigidBody3D"]
+continuous_cd = true
+can_sleep = false
 
 [node name="Wood" type="CSGBox3D" parent="."]
 material_override = SubResource("StandardMaterial3D_ulfj0")

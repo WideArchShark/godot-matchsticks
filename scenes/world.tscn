@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://cext5fqor5fha"]
+[gd_scene load_steps=9 format=3 uid="uid://cext5fqor5fha"]
 
 [ext_resource type="Script" path="res://addons/godot_state_charts/state_chart.gd" id="2_6k5b0"]
 [ext_resource type="Script" path="res://addons/godot_state_charts/compound_state.gd" id="3_3gxh4"]
@@ -7,18 +7,18 @@
 [ext_resource type="Script" path="res://scripts/match_count_label.gd" id="5_71n33"]
 [ext_resource type="Script" path="res://scripts/state_manager.gd" id="5_623jp"]
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_cn0ca"]
-albedo_color = Color(0, 0.529412, 0.313726, 1)
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_wx14d"]
+albedo_color = Color(0, 0.407843, 0.247059, 1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_u5yvi"]
+size = Vector3(20, 1, 20)
 
 [node name="World" type="Node3D"]
 
 [node name="StateManager" type="Node" parent="."]
 script = ExtResource("5_623jp")
-
-[node name="floor" type="CSGBox3D" parent="."]
-material_override = SubResource("StandardMaterial3D_cn0ca")
-use_collision = true
-size = Vector3(20, 0.1, 20)
+min_matches = 10
+max_matches = 12
 
 [node name="Camera3D" type="Camera3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.81301, 0.582251, 0, -0.582251, 0.81301, 0, 5, 4.54172)
@@ -33,19 +33,38 @@ script = ExtResource("2_6k5b0")
 script = ExtResource("3_3gxh4")
 initial_state = NodePath("Init")
 
+[node name="ToPlayerTurn" type="Node" parent="GameStateChart/CompoundState"]
+script = ExtResource("4_edus7")
+to = NodePath("../PlayerTurn")
+event = &"to_player_turn"
+delay_seconds = 2.0
+
+[node name="ToEvaluate" type="Node" parent="GameStateChart/CompoundState"]
+script = ExtResource("4_edus7")
+to = NodePath("../Evaluate")
+event = &"to_evaluate"
+delay_seconds = 3.0
+
+[node name="ToComputerTurn" type="Node" parent="GameStateChart/CompoundState"]
+script = ExtResource("4_edus7")
+to = NodePath("../ComputerTurn")
+event = &"to_computer_turn"
+delay_seconds = 3.0
+
 [node name="Init" type="Node" parent="GameStateChart/CompoundState"]
 script = ExtResource("4_wav46")
-
-[node name="ToPlayerTurn" type="Node" parent="GameStateChart/CompoundState/Init"]
-script = ExtResource("4_edus7")
-to = NodePath("../../PlayerTurn")
-event = &"to_player_turn"
-delay_seconds = 3.0
 
 [node name="PlayerTurn" type="Node" parent="GameStateChart/CompoundState"]
 script = ExtResource("4_wav46")
 
+[node name="ComputerTurn" type="Node" parent="GameStateChart/CompoundState"]
+script = ExtResource("4_wav46")
+
+[node name="Evaluate" type="Node" parent="GameStateChart/CompoundState"]
+script = ExtResource("4_wav46")
+
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
+follow_viewport_enabled = true
 
 [node name="MatchCountLabel" type="Label" parent="CanvasLayer"]
 anchors_preset = 10
@@ -57,6 +76,91 @@ text = "Matches Remaining: 0"
 horizontal_alignment = 1
 script = ExtResource("5_71n33")
 
+[node name="StatusLabel" type="Label" parent="CanvasLayer"]
+visible = false
+anchors_preset = 14
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_top = -11.5
+offset_bottom = 11.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 36
+text = "Players Turn"
+horizontal_alignment = 1
+
+[node name="PlayerChoiceBoxContainer" type="VBoxContainer" parent="CanvasLayer"]
+visible = false
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -374.0
+offset_top = -127.0
+offset_right = 374.0
+offset_bottom = -39.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="QuestionLabel" type="Label" parent="CanvasLayer/PlayerChoiceBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 36
+text = "How many matches would you like to take?"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/PlayerChoiceBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Button1" type="Button" parent="CanvasLayer/PlayerChoiceBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "1"
+
+[node name="Button2" type="Button" parent="CanvasLayer/PlayerChoiceBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "2"
+
+[node name="Button3" type="Button" parent="CanvasLayer/PlayerChoiceBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "3
+"
+
+[node name="NewGameButton" type="Button" parent="CanvasLayer"]
+visible = false
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -46.5
+offset_top = 103.5
+offset_right = 46.5
+offset_bottom = 134.5
+grow_horizontal = 2
+grow_vertical = 2
+text = "New Game"
+
+[node name="floor2" type="RigidBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+freeze = true
+
+[node name="CSGBox3D" type="CSGBox3D" parent="floor2"]
+material_override = SubResource("StandardMaterial3D_wx14d")
+size = Vector3(20, 1, 20)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="floor2"]
+shape = SubResource("BoxShape3D_u5yvi")
+
 [connection signal="match_count_changed" from="StateManager" to="CanvasLayer/MatchCountLabel" method="_on_state_manager_match_count_changed"]
 [connection signal="state_entered" from="GameStateChart/CompoundState/Init" to="StateManager" method="_on_init_state_entered"]
 [connection signal="state_entered" from="GameStateChart/CompoundState/PlayerTurn" to="StateManager" method="_on_player_turn_state_entered"]
+[connection signal="state_entered" from="GameStateChart/CompoundState/ComputerTurn" to="StateManager" method="_on_computer_turn_state_entered"]
+[connection signal="state_entered" from="GameStateChart/CompoundState/Evaluate" to="StateManager" method="_on_evaluate_state_entered"]
+[connection signal="pressed" from="CanvasLayer/PlayerChoiceBoxContainer/HBoxContainer/Button1" to="StateManager" method="_on_player_choice_button_pressed" binds= [1]]
+[connection signal="pressed" from="CanvasLayer/PlayerChoiceBoxContainer/HBoxContainer/Button2" to="StateManager" method="_on_player_choice_button_pressed" binds= [2]]
+[connection signal="pressed" from="CanvasLayer/PlayerChoiceBoxContainer/HBoxContainer/Button3" to="StateManager" method="_on_player_choice_button_pressed" binds= [3]]
+[connection signal="pressed" from="CanvasLayer/NewGameButton" to="StateManager" method="_on_new_game_button_pressed"]

@@ -14,13 +14,6 @@ var turn: String = "player"
 
 signal match_count_changed(new_match_count: int)
 
-#func _display_status(display_text: String, duration: int):
-#	status_label.visible = true
-#	status_label.text = display_text
-#	await get_tree().create_timer(duration).timeout
-#	status_label.visible = false
-
-	
 func _on_init_state_entered():
 	print("init state entered")
 	current_match_count = randi_range(min_matches, max_matches)
